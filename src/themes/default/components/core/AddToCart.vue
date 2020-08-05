@@ -1,6 +1,9 @@
 <template>
   <button-full @click.native="addToCart(product)" :disabled="isProductDisabled" data-testid="addToCart">
-    {{ $t('Add to cart') }}
+    <div id="btn-content">
+      {{ $t('Add to cart') }}
+      <spinner v-if="isProductDisabled" />
+    </div>
   </button-full>
 </template>
 
@@ -10,10 +13,11 @@ import { notifications } from '@vue-storefront/core/modules/cart/helpers'
 import focusClean from 'theme/components/theme/directives/focusClean'
 import ButtonFull from 'theme/components/theme/ButtonFull.vue'
 import { mapGetters } from 'vuex'
+import Spinner from './Spinner'
 
 export default {
   directives: { focusClean },
-  components: { ButtonFull },
+  components: { ButtonFull, Spinner },
   props: {
     product: {
       required: true,
@@ -58,3 +62,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  #btn-content {
+      display: inline-flex !important;
+  }
+</style>
