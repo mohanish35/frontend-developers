@@ -1,8 +1,8 @@
 <template>
-  <button-full @click.native="addToCart(product)" :disabled="isProductDisabled" data-testid="addToCart">
+  <button-full @click.native="addToCart(product)" :class="disableBtn" data-testid="addToCart">
     <div id="btn-content">
-      {{ $t('Add to cart') }}
-      <spinner v-if="isProductDisabled" />
+      {{ itemAddedToCart ? $t('Added') : $t('Add to cart') }}
+      <spinner v-if="showSpinner" />
     </div>
   </button-full>
 </template>
@@ -28,6 +28,11 @@ export default {
       default: false
     }
   },
+  data () {
+    return {
+      itemAddedToCart: false
+    }
+  },
   methods: {
     onAfterRemovedVariant () {
       this.$forceUpdate()
@@ -35,6 +40,7 @@ export default {
     async addToCart (product) {
       try {
         const diffLog = await this.$store.dispatch('cart/addItem', { productToAdd: product })
+        this.itemAddedToCart = true;
       } catch (message) {
         this.notifyUser(notifications.createNotification({ type: 'error', message }))
       }
@@ -47,8 +53,11 @@ export default {
     ...mapGetters({
       isAddingToCart: 'cart/getIsAdding'
     }),
-    isProductDisabled () {
+    showSpinner () {
       return this.disabled || formatProductMessages(this.product.errors) !== '' || this.isAddingToCart
+    },
+    disableBtn: function () {
+      return this.itemAddedToCart && 'disable-btn'
     }
   },
   beforeMount () {
@@ -63,5 +72,8 @@ export default {
 <style lang="scss" scoped>
   #btn-content {
       display: inline-flex !important;
+  }
+  .disable-btn {
+    pointer-events: none
   }
 </style>
