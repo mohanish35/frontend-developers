@@ -12,7 +12,7 @@ import { formatProductMessages } from '@vue-storefront/core/filters/product-mess
 import { notifications } from '@vue-storefront/core/modules/cart/helpers'
 import focusClean from 'theme/components/theme/directives/focusClean'
 import ButtonFull from 'theme/components/theme/ButtonFull.vue'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import Spinner from './Spinner'
 
 export default {
@@ -40,6 +40,7 @@ export default {
     async addToCart (product) {
       try {
         const diffLog = await this.$store.dispatch('cart/addItem', { productToAdd: product })
+        this.openMicrocart()
         this.itemAddedToCart = true;
       } catch (message) {
         this.notifyUser(notifications.createNotification({ type: 'error', message }))
@@ -47,7 +48,10 @@ export default {
     },
     notifyUser (notificationData) {
       this.$store.dispatch('notification/spawnNotification', notificationData, { root: true })
-    }
+    },
+    ...mapActions({
+      openMicrocart: 'ui/toggleMicrocart'
+    })
   },
   computed: {
     ...mapGetters({
