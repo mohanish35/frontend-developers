@@ -1,5 +1,5 @@
 <template>
-  <button-full @click.native="addToCart(product)" :disabled="isProductDisabled" data-testid="addToCart">
+  <button-full @click.native="addToCart(product)" :disabled="isProductDisabled" data-testid="add-to-cart-btn" id="add-to-cart-btn">
     {{ $t('Add to cart') }}
   </button-full>
 </template>
@@ -58,3 +58,12 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+  #add-to-cart-btn{
+    @media (max-width: 767px) {
+        height: 48px !important;
+        padding: 0 !important;
+    }
+  }
+</style>

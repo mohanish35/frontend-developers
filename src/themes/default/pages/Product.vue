@@ -1,5 +1,9 @@
 <template>
   <div id="product">
+    <add-to-cart-sticky-wrapper
+      :product="getCurrentProduct"
+      :disabled="isAddToCartDisabled"
+    />
     <section class="bg-cl-secondary px20 product-top-section">
       <div class="container">
         <section class="row m0 between-xs">
@@ -118,7 +122,7 @@
               :check-max-quantity="manageQuantity"
               @error="handleQuantityError"
             />
-            <div class="row m0">
+            <div class="row m0 hidden-sm hidden-xs">
               <add-to-cart
                 :product="getCurrentProduct"
                 :disabled="isAddToCartDisabled"
@@ -223,10 +227,12 @@ import { catalogHooksExecutors } from '@vue-storefront/core/modules/catalog-next
 import ProductPrice from 'theme/components/core/ProductPrice.vue'
 import { doPlatformPricesSync } from '@vue-storefront/core/modules/catalog/helpers'
 import { filterChangedProduct } from '@vue-storefront/core/modules/catalog/events'
+import AddToCartStickyWrapper from 'theme/components/core/AddToCartStickyWrapper'
 
 export default {
   components: {
     AddToCart,
+    AddToCartStickyWrapper,
     AddToCompare,
     AddToWishlist,
     Breadcrumbs,
