@@ -1,5 +1,5 @@
 <template>
-  <button-full @click.native="addToCart(product)" :class="disableBtn" data-testid="addToCart">
+  <button-full @click.native="addToCart(product)" :disabled="disableBtn" :class="removeBtnEvents" data-testid="addToCart">
     <div id="btn-content">
       {{ itemAddedToCart ? $t('Added') : $t('Add to cart') }}
       <spinner v-if="showSpinner" />
@@ -58,9 +58,12 @@ export default {
       isAddingToCart: 'cart/getIsAdding'
     }),
     showSpinner () {
-      return this.disabled || formatProductMessages(this.product.errors) !== '' || this.isAddingToCart
+      return this.isAddingToCart
     },
-    disableBtn: function () {
+    disableBtn () {
+      return this.disabled || formatProductMessages(this.product.errors) !== ''
+    },
+    removeBtnEvents: function () {
       return this.itemAddedToCart && 'disable-btn'
     }
   },
