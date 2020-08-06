@@ -309,7 +309,8 @@ export default {
       return getAvailableFiltersByProduct(this.getCurrentProduct)
     },
     getSelectedFilters () {
-      return getSelectedFiltersByProduct(this.getCurrentProduct, this.getCurrentProductConfiguration)
+      const filteredProd = getSelectedFiltersByProduct(this.getCurrentProduct, this.getCurrentProductConfiguration)
+      return filteredProd || this.notifyWrongAttributes()
     },
     isSimpleOrConfigurable () {
       return ['simple', 'configurable'].includes(this.getCurrentProduct.type_id)
