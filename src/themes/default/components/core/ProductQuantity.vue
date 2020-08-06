@@ -1,25 +1,18 @@
 <template>
   <div class="product-quantity">
-    <base-input-number
-      :name="name"
-      :value="value"
-      :min="1"
-      :max="max"
-      :disabled="disabled"
-      @input="$emit('input', $event)"
-      @blur="$v.$touch()"
-      only-positive
-      :validations="[
-        {
-          condition: !$v.value.numeric || !$v.value.minValue || !$v.value.required,
-          text: $t(`Quantity must be positive integer`)
-        },
-        {
-          condition: maxQuantity && value && !$v.value.maxValue,
-          text: $t('Quantity must be below {quantity}', { quantity: maxQuantity })
-        }
-      ]"
-    />
+    <select
+      class="quantity-selector"
+      v-model="selectedQuantity"
+      v-if="!loading && max > 0"
+      @change="updateQuantity"
+    >
+      <option v-for="(iter, id) in max" :key="id" :value="iter">
+        {{ iter }}
+      </option>
+    </select>
+    <span v-if="!loading">
+      {{ max > 0 ? `${max} Items Available` : "This Item Is Out Of Stock :(" }}
+    </span>
     <spinner v-if="loading" />
   </div>
 </template>
@@ -27,13 +20,10 @@
 <script>
 import { minValue, maxValue, numeric, required } from 'vuelidate/lib/validators'
 import { onlineHelper } from '@vue-storefront/core/helpers'
-import BaseInputNumber from 'theme/components/core/blocks/Form/BaseInputNumber'
 import Spinner from 'theme/components/core/Spinner'
-
 export default {
   components: {
-    Spinner,
-    BaseInputNumber
+    Spinner
   },
   props: {
     value: {
@@ -61,6 +51,11 @@ export default {
       default: false
     }
   },
+  data: function () {
+    return {
+      selectedQuantity: this.value
+    };
+  },
   computed: {
     isOnline (value) {
       return onlineHelper.isOnline
@@ -69,7 +64,6 @@ export default {
       if (!this.isOnline || !this.isSimpleOrConfigurable) {
         return null
       }
-
       return this.maxQuantity
     },
     disabled () {
@@ -99,11 +93,23 @@ export default {
     '$v.$invalid' (error) {
       this.$emit('error', error)
     }
+  },
+  methods: {
+    updateQuantity () {
+      this.$emit('input', this.selectedQuantity)
+      this.$v.$touch()
+    }
   }
 }
 </script>
 <style lang="scss" scoped>
+.quantity-selector {
+  width: 46px;
+  height: 22px;
+  margin-right: 7px;
+}
 .product-quantity {
+  font-size: 18px;
   position: relative;
   /deep/ .spinner {
     position: absolute;
