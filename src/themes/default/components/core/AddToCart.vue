@@ -1,5 +1,5 @@
 <template>
-  <button-full @click.native="addToCart(product)" :disabled="isProductDisabled" data-testid="add-to-cart-btn" id="add-to-cart-btn">
+  <button-full @click.native="addToCart(product)" :disabled="isProductDisabled" :data-testid="testid" id="add-to-cart-btn">
     {{ $t('Add to cart') }}
   </button-full>
 </template>
@@ -22,6 +22,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    testid: {
+      type: String,
+      default: 'addToCart'
     }
   },
   methods: {

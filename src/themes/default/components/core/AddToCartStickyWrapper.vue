@@ -8,6 +8,7 @@
       <add-to-cart
         :product="product"
         :disabled="disabled"
+        testid="addToCartStickyWrapper"
       />
     </div>
   </transition>
@@ -37,7 +38,7 @@ export default {
       this.btnVisible = window.scrollY < 1750
     }
   },
-  created () {
+  mounted () {
     window.addEventListener('scroll', this.toggleBtnVisibility);
   },
   destroyed () {
