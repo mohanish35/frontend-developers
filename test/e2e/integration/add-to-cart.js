@@ -1,5 +1,16 @@
 /* eslint no-undef: 0 */
 describe('add to cart', () => {
+  it('verify that dropdown quantity selector functions correctly', () => {
+    cy.visit('/p/WS01/gwyn-endurance-tee-1577/WS01');
+    cy.get('.quantity-selector').should('be.visible')
+    cy.get('.quantity-selector').select('5')
+    cy.get('[data-testid=addToCart]').click();
+    cy.wait(2000)
+    cy.get('[data-testid=notificationMessage]').should('contain', 'Product has been added to the cart!');
+    cy.get('[data-testid=openMicrocart]').click({ force: true });
+    cy.get('.quantity-selector').first().should('have.value', '5');
+  });
+
   it('verify that the configurable product is added to cart', () => {
     cy.visit('/p/WS01/gwyn-endurance-tee-1577/WS01');
     cy.get('[data-testid=productName]').contains('Gwyn Endurance Tee')
