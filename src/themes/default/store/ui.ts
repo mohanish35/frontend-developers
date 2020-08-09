@@ -69,5 +69,10 @@ export const uiStore = {
     closeWishlist ({ commit, state }) {
       if (state.wishlist) commit('setWishlist', false)
     }
+  },
+  getters: {
+    getSidebarActive (state) {
+      return state.sidebar
+    }
   }
 }
