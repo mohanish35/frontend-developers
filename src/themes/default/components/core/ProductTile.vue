@@ -22,7 +22,7 @@
     </div>
     <router-link
       class="block no-underline product-link"
-      :to="productLink"
+      :to="selectedVariantLink || productLink"
       data-testid="productLink"
     >
       <div
@@ -57,6 +57,16 @@
         v-if="!product.special_price && parseFloat(product.price_incl_tax) > 0 && !onlyImage"
       >{{ product.price_incl_tax | price(storeView) }}</span>
     </router-link>
+    <div class="h5">
+      <div class="row variants-wrapper pt10 pb20">
+        <color-selector
+          v-for="filter in variants"
+          :key="filter.color"
+          :variant="filter"
+          @change="onVariantChange(filter)"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -67,16 +77,17 @@ import config from 'config'
 import ProductImage from './ProductImage'
 import AddToWishlist from 'theme/components/core/blocks/Wishlist/AddToWishlist'
 import AddToCompare from 'theme/components/core/blocks/Compare/AddToCompare'
+import ColorSelector from 'theme/components/core/ColorSelector.vue';
 import { IsOnWishlist } from '@vue-storefront/core/modules/wishlist/components/IsOnWishlist'
 import { IsOnCompare } from '@vue-storefront/core/modules/compare/components/IsOnCompare'
 import { currentStoreView } from '@vue-storefront/core/lib/multistore'
-
 export default {
   mixins: [ProductTile, IsOnWishlist, IsOnCompare],
   components: {
     ProductImage,
     AddToWishlist,
-    AddToCompare
+    AddToCompare,
+    ColorSelector
   },
   props: {
     labelsActive: {
@@ -88,11 +99,35 @@ export default {
       default: false
     }
   },
+  data: () => ({
+    variants: [],
+    selectedVariantImage: null,
+    selectedVariantLink: null
+  }),
+  mounted () {
+    if (this.product.configurable_children) {
+      this.product.configurable_children.forEach(prod => {
+        const label = prod.image.split('-')[1].split('_')[0]
+        const variantDetails = {
+          label,
+          color: prod.color,
+          image: prod.image,
+          sku: prod.sku
+        }
+
+        // Do not add the variant if already in variants array
+        const variantAdded = this.variants.filter(c => c.color === prod.color)
+        if (variantAdded.length === 0) {
+          this.variants.push(variantDetails)
+        }
+      });
+    }
+  },
   computed: {
     thumbnailObj () {
       return {
-        src: this.thumbnail,
-        loading: this.thumbnail
+        src: this.selectedVariantImage || this.thumbnail,
+        loading: this.selectedVariantImage || this.thumbnail
       }
     },
     favoriteIcon () {
@@ -103,6 +138,14 @@ export default {
     }
   },
   methods: {
+    onVariantChange ({ sku, image }) {
+      if (sku) {
+        const withoutSku = this.productLink.split('?')[0]
+        this.selectedVariantLink = `${withoutSku}?childSku=${sku}`
+      }
+
+      this.selectedVariantImage = `https://demo.vuestorefront.io/img/310/300/resize/${image}`
+    },
     onProductPriceUpdate (product) {
       if (product.sku === this.product.sku) {
         Object.assign(this.product, product)
@@ -143,11 +186,9 @@ export default {
 @import '~theme/css/animations/transitions';
 @import '~theme/css/variables/colors';
 @import '~theme/css/helpers/functions/color';
-
 $bg-secondary: color(secondary, $colors-background);
 $border-secondary: color(secondary, $colors-border);
 $color-white: color(white);
-
 .product {
   position: relative;
   @media (max-width: 767px) {
@@ -180,11 +221,9 @@ $color-white: color(white);
     }
   }
 }
-
 .price-original {
   text-decoration: line-through;
 }
-
 %label {
   position: absolute;
   top: 0;
@@ -199,10 +238,8 @@ $color-white: color(white);
   color: $color-white;
   font-size: 12px;
 }
-
 .product-cover {
   overflow: hidden;
-
   &__thumb {
     padding-bottom: calc(143.88% / (164.5 / 100));
     @media screen and (min-width: 768px) {
@@ -212,7 +249,6 @@ $color-white: color(white);
     will-change: opacity, transform;
     transition: 0.3s opacity $motion-main, 0.3s transform $motion-main;
   }
-
   @media screen and (min-width: 768px) {
     &:hover {
       .product-cover__thumb {
@@ -225,7 +261,6 @@ $color-white: color(white);
       }
     }
   }
-
   &.sale {
     &::after {
       @extend %label;

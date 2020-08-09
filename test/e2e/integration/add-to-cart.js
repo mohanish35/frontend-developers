@@ -1,5 +1,12 @@
 /* eslint no-undef: 0 */
 describe('add to cart', () => {
+  it('verify that variant selector on PLP loads the correct variant on product details page', () => {
+    cy.visit('/');
+    cy.get('[aria-label="Select color blue"]').first().click()
+    cy.get('.product').first().click()
+    cy.get('[aria-label="Select color blue"]').should('have', 'class', 'active')
+  });
+
   it('verify that the configurable product is added to cart', () => {
     cy.visit('/p/WS01/gwyn-endurance-tee-1577/WS01');
     cy.get('[data-testid=productName]').contains('Gwyn Endurance Tee')
